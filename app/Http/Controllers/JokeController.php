@@ -23,8 +23,37 @@ class JokeController extends Controller
     public function index()
     {
         $jokesData = $this->JokeRepository->findAll();
+        $countData = $this->JokeRepository->countAll();
 
-        include 'joke.blade.php';
+        $id = $jokesData['id'];
+        var_dump($id);
+        $jokeContent = $jokesData['jokeContent'];
+
+        return view('joke', compact('id', 'jokeContent', 'countData'));
+    }
+
+    public function getNextJoke()
+    {
+        $jokeContent = $this->request['jokeId'];
+        $id = $this->request['jokeId'];
+        $countData = $this->request['countData'];
+        if (!isset($ids)) {
+            $ids = [];
+            $ids[] = $id;
+            var_dump('gone');
+        }
+        // if (isset($ids)) {
+        // }
+        $ids = array_push($ids, $id);
+        // array_push($ids, $id);
+        // var_dump($id);
+        var_dump($ids);
+        // dd($ids);
+        $all = $this->request->all();
+
+        return view('joke', compact('id', 'jokeContent', 'countData'));
+
+        // return $ids;
     }
 
     /**
@@ -45,6 +74,7 @@ class JokeController extends Controller
 
         $jokeData = $this->request->all();
         $newJoke = $this->JokeRepository->create($jokeData);
+
 
         return $this->successRequest($newJoke);
     }

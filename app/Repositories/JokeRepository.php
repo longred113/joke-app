@@ -9,8 +9,14 @@ class JokeRepository implements JokeRepositoryInterface
 {
     public function findAll()
     {
-        return Jokes::all();
+        return Jokes::all()->random(1)->first();;
     }
+
+    public function countAll()
+    {
+        return Jokes::count();
+    }
+
     public function create($data)
     {
         return Jokes::create($data);

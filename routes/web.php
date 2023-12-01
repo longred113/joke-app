@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\JokeController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -17,6 +18,5 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/joke', function () {
-    return view('joke');
-});
+Route::get('/joke', [JokeController::class, 'index']);
+Route::post('/joke', [JokeController::class, 'getNextJoke']);

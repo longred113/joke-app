@@ -22,6 +22,6 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::prefix('joke')
     ->name('joke.')
     ->group(function () {
-        Route::get('/', [JokeController::class, 'index'])->name('index');
+        // Route::get('/', [JokeController::class, 'index'])->name('index');
         Route::post('/create', [JokeController::class, 'store'])->name('store');
     });

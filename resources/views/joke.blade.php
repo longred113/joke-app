@@ -1,36 +1,39 @@
 <!DOCTYPE html>
 <html lang="en">
-<!-- include 'JokeController.php' -->
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <title>Document</title>
+    <link href="/main.css" rel="stylesheet">
 </head>
 
-<body>
+<body class="container">
     <?php
-    // Example Database Connection
-    $servername = "localhost";
-    $username = "root";
-    $password = "";
-    $dbname = "joke-app";
-
-    try {
-        $conn = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
-        $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        echo "Connected successfully";
-    } catch (PDOException $e) {
-        echo "Connection failed: " . $e->getMessage();
+    if (session_id() === '') {
+        session_start();
     }
-    $stmt = $conn->prepare("SELECT * FROM jokes");
-    $stmt->execute();
-    $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    if (!isset($_SESSION['jokeIdExists'])) {
+        $_SESSION['jokeIdExists'] = $countData;
+    }
+    if (isset($_SESSION['jokeIdExists']) && $_SESSION['jokeIdExists'] > 0) {
+        $_SESSION['jokeIdExists'] -= 1;
+    }
+    if ($_SESSION['jokeIdExists'] == 0) {
+        $jokeContent = "That's all the jokes for today! Come back another day!";
+    }
+    // echo $_SESSION['jokeIdExists'];
+    // unset($_SESSION['jokeIdExists']);
     ?>
-    <?php foreach ($data as $row) : ?>
-        <li><?php echo $row['jokeContent']; ?></li>
-        <!-- Repeat for other columns as needed -->
-    <?php endforeach; ?>
+    <form action="" method="post">
+        <p id="jokeContent" , name="laa"><?= $jokeContent ?></p><br>
+        <input type="hidden" name="jokeId" value="<?= $id ?>">
+        <input type="hidden" name="countData" value="<?= $countData ?>">
+        {{csrf_field()}}
+        <button>This is Funny!</button>
+        <button>This is not funny.</button>
+    </form>
 </body>
 
 </html>
