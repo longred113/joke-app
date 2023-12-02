@@ -14,25 +14,30 @@
     if (session_id() === '') {
         session_start();
     }
-    if (!isset($_SESSION['jokeIdExists'])) {
-        $_SESSION['jokeIdExists'] = $countData;
+    if (!isset($_SESSION['countJokeExists'])) {
+        $_SESSION['countJokeExists'] = $countData;
     }
-    if (isset($_SESSION['jokeIdExists']) && $_SESSION['jokeIdExists'] > 0) {
-        $_SESSION['jokeIdExists'] -= 1;
+    if (empty($_SESSION['existsJoke'])) {
+        $_SESSION['existsJokeIds'] = $existsIds;
+        $existsIds = $_SESSION['existsJokeIds'];
     }
-    if ($_SESSION['jokeIdExists'] == 0) {
+    if (isset($_SESSION['countJokeExists']) && $_SESSION['countJokeExists'] > 0) {
+        $_SESSION['countJokeExists'] -= 1;
+    }
+    if ($_SESSION['countJokeExists'] == 0) {
         $jokeContent = "That's all the jokes for today! Come back another day!";
     }
-    // echo $_SESSION['jokeIdExists'];
-    // unset($_SESSION['jokeIdExists']);
+    // unset($_SESSION['countJokeExists']);
+    // session_destroy();
     ?>
     <form action="" method="post">
         <p id="jokeContent" , name="laa"><?= $jokeContent ?></p><br>
         <input type="hidden" name="jokeId" value="<?= $id ?>">
         <input type="hidden" name="countData" value="<?= $countData ?>">
+        <input type="hidden" name="existsJokeIds" value="<?= implode(',', $existsIds) ?>">
         {{csrf_field()}}
-        <button>This is Funny!</button>
-        <button>This is not funny.</button>
+        <button type="submit" name="status" value="This is Funny!">This is Funny!</button>
+        <button type="submit" name="status" value="This is not funny">This is not funny.</button>
     </form>
 </body>
 

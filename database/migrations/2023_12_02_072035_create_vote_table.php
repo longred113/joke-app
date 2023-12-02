@@ -11,9 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('jokes', function (Blueprint $table) {
+        Schema::create('votes', function (Blueprint $table) {
             $table->unsignedInteger('id')->autoIncrement();
-            $table->longText('jokeContent');
+            $table->unsignedInteger('jokeId');
+            $table->foreign('jokeId')->references('id')->on('jokes')->onDelete('cascade');
+            $table->string('voteStatus');
             $table->timestamps();
         });
     }
@@ -23,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('jokes');
+        Schema::dropIfExists('vote');
     }
 };

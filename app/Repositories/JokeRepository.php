@@ -21,4 +21,11 @@ class JokeRepository implements JokeRepositoryInterface
     {
         return Jokes::create($data);
     }
+
+    public function getNextJoke($existsIds)
+    {
+        return  Jokes::whereNotIn('id', $existsIds)
+            ->inRandomOrder()
+            ->first();
+    }
 }

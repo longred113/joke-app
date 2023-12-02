@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Jokes;
 use App\Repositories\Interfaces\JokeRepositoryInterface;
+use App\Repositories\Interfaces\VoteRepositoryInterface;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -10,50 +12,59 @@ class JokeController extends Controller
 {
     protected $request;
 
-    private $JokeRepository;
+    private $jokeRepository;
 
-    public function __construct(Request $request, JokeRepositoryInterface $JokeRepository)
+    private $voteRepository;
+
+    public function __construct(Request $request, JokeRepositoryInterface $jokeRepository, VoteRepositoryInterface $voteRepository)
     {
         $this->request = $request;
-        $this->JokeRepository = $JokeRepository;
+        $this->jokeRepository = $jokeRepository;
+        $this->voteRepository = $voteRepository;
     }
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $jokesData = $this->JokeRepository->findAll();
-        $countData = $this->JokeRepository->countAll();
+        $jokesData = $this->jokeRepository->findAll();
+        $countData = $this->jokeRepository->countAll();
 
         $id = $jokesData['id'];
-        var_dump($id);
         $jokeContent = $jokesData['jokeContent'];
+        $existsIds[] = $id;
 
-        return view('joke', compact('id', 'jokeContent', 'countData'));
+        return view('joke', compact('id', 'jokeContent', 'countData', 'existsIds'));
     }
 
     public function getNextJoke()
     {
-        $jokeContent = $this->request['jokeId'];
-        $id = $this->request['jokeId'];
-        $countData = $this->request['countData'];
-        if (!isset($ids)) {
-            $ids = [];
-            $ids[] = $id;
-            var_dump('gone');
+        if (isset($this->request['existsJokeIds'])) {
+            $jokeId = $this->request['jokeId'];
+            if (isset($jokeId)) {
+                $voteData = [
+                    "jokeId" => $jokeId,
+                    "voteStatus" => $this->request['status'],
+                ];
+                $newVote = $this->voteRepository->create($voteData);
+            }
+            $existsIds = explode(',', $this->request['existsJokeIds']);
+            $joke = $this->jokeRepository->getNextJoke($existsIds);
+            if (!empty($joke)) {
+                $id = strval($joke['id']);
+                array_push($existsIds, $id);
+                $jokeContent = $joke['jokeContent'];
+            } else {
+                $id = '';
+                $jokeContent = '';
+            }
         }
-        // if (isset($ids)) {
-        // }
-        $ids = array_push($ids, $id);
-        // array_push($ids, $id);
-        // var_dump($id);
-        var_dump($ids);
-        // dd($ids);
+        $countData = $this->request['countData'];
         $all = $this->request->all();
 
-        return view('joke', compact('id', 'jokeContent', 'countData'));
+        return view('joke', compact('id', 'jokeContent', 'countData', 'existsIds'));
 
-        // return $ids;
+        return $all;
     }
 
     /**
@@ -73,7 +84,7 @@ class JokeController extends Controller
         }
 
         $jokeData = $this->request->all();
-        $newJoke = $this->JokeRepository->create($jokeData);
+        $newJoke = $this->jokeRepository->create($jokeData);
 
 
         return $this->successRequest($newJoke);
